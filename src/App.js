@@ -1,6 +1,6 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
-import { auth } from './firebase/firebase.utils.js';
+import { auth, createUserProfileDocument } from './firebase/firebase.utils.js';
 
 import './App.css';
 
@@ -21,11 +21,27 @@ class App extends React.Component {
   unsubscribeFromAuth = null;
 
   componentDidMount() {
-    this.unsubscribeFromAuth = auth.onAuthStateChanged(user => {
-      this.setState({ currentUser: user });
+    this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
+      if (userAuth) {
+        const userRef = createUserProfileDocument(userAuth);
 
-      console.log(user);
-    })
+        (await userRef).onSnapshot(snapShot => {
+          this.setState({
+            currentUser: {
+              id: snapShot.id,
+              ...snapShot.data()
+            }
+          })
+          console.log(this.state);
+        })
+      } else {
+        //else statement prevents calling this.setState() firing twice
+        this.setState({ currentUser: userAuth });
+      }
+      // this.setState({ currentUser: user });
+      // createUserProfileDocument(user);
+      // console.log(user);
+    });
   };
 
   componentWillUnmount() {
