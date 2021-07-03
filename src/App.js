@@ -32,15 +32,11 @@ class App extends React.Component {
               ...snapShot.data()
             }
           })
-          console.log(this.state);
         })
       } else {
         //else statement prevents calling this.setState() firing twice
         this.setState({ currentUser: userAuth });
       }
-      // this.setState({ currentUser: user });
-      // createUserProfileDocument(user);
-      // console.log(user);
     });
   };
 
